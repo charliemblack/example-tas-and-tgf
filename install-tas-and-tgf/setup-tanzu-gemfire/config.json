@@ -1,0 +1,13 @@
+{
+	"auths": {
+		"dev.registry.pivotal.io": {
+			"auth": "<username:password base64>"
+		},
+		"https://index.docker.io/v1/": {
+			"auth": "<username:password base64>"
+		}
+	},
+	"HttpHeaders": {
+		"User-Agent": "Docker-Client/19.03.6 (linux)"
+	}
+}

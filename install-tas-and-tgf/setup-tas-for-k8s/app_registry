@@ -1,0 +1,7 @@
+
+app_registry:
+   hostname: https://index.docker.io/v1/
+   #! often times this is just your `docker_user`
+   repository_prefix: <docker_namespace or docker_user>
+   username: <docker_user>
+   password: <docker_password>

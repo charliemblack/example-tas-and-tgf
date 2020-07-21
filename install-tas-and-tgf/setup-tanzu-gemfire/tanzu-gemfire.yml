@@ -1,0 +1,9 @@
+apiVersion: core.geode.apache.org/v1alpha1
+kind: GeodeCluster
+metadata:
+  name: gemfire
+spec:
+  locators:
+    replicas: 2
+  servers:
+    replicas: 2
