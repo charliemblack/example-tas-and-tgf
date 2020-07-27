@@ -1,6 +1,6 @@
-# Setup and install VMware Tanzu Application Service and VMware Tanzu GemFire for Kubernetes
+# Setup and Install Tanzu GemFire and  Tanzu Application Service for Kubernetes
 
-This project was my attempt to automate the install of Tanzu Application Service TAS and Tanzu GemFire for Kubernetes for demos on some VM.   The project is not meant to be production quality since it does't check if something has been done correctly.   
+This project was my attempt to automate the install of Tanzu Application Service TAS and Tanzu GemFire for Kubernetes for examples on some VM.   The project is not meant to be production quality since it does't check if something has been done correctly.   
 
 The installed kubernetes cluster will be hosted on a single VM.   I am sure one could scale this out by following each projects instructions for production scale and assurance.
 

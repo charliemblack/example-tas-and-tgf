@@ -8,31 +8,26 @@ var region = null;
 
 app.use(express.json())
 
-// The queries for PCF to grab connection details
+// JSON Query to get `User Provided Service` connection details from VCAP_SERVICES
 const jsonPathLocators = "$.user-provided[0].credentials.locators";
 
 async function init() {
+    cacheFactory = gemfire.createCacheFactory();
+    var cache = await cacheFactory.create();
+    var poolFactory = await cache.getPoolManager().createFactory();
+
     var locators = JSONPath({
         path: jsonPathLocators,
         json: JSON.parse(process.env.VCAP_SERVICES)
     })[0];
 
-    cacheFactory = gemfire.createCacheFactory();
-
-    var cache = await cacheFactory.create();
-
-    var poolFactory = await cache.getPoolManager().createFactory();
-    poolFactory.setPRSingleHopEnabled(false);
     for (i = 0; i < locators.length; i++) {
         var serverPort = locators[i].split(/[[\]]/);
         poolFactory.addLocator(serverPort[0], parseInt(serverPort[1]));
     }
     poolFactory.create("pool")
 
-    region = cache.createRegion("test", {
-        type: 'PROXY',
-        poolName: 'pool'
-    })
+    region = cache.createRegion("books", {type: 'PROXY', poolName: 'pool'});
 }
 
 app.get("/book/get", async (req, res) => {
@@ -50,14 +45,11 @@ app.put(['/book/removeall'], async (req, res) => {
 
     var keys = await region.serverKeys();
     for (i = 0; i < keys.length; i++) {
-      region.remove(keys[i]);
+        region.remove(keys[i]);
     }
     res.json({
         success: true
     });
-});
-app.get('/env', (req, res) => {
-    res.json(process.env);
 });
 
 app.set("port", process.env.PORT || 8080);
@@ -65,5 +57,5 @@ app.set("port", process.env.PORT || 8080);
 init();
 
 app.listen(app.get("port"), () => {
-    console.log(`Hello from NodeFire test app.`);
+    console.log(`Hello from bookstore test app.`);
 });

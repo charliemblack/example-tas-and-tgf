@@ -3,4 +3,6 @@ Over the corse of time I will update this repository with some example of how to
 
 # Install Tanzu GemFire for Kubernetes and Tanzu Application Service
 
-[Install Tanzu GemFire for Kubernetes and Tanzu Application Service project](install-tas-and-tgf/readme.md) installs the two projects.   After Tanzu GemFire for Kubernetes is in stalled it will instanciate a cluster as defined by this [file](install-tas-and-tgf/tanzu-gemfire.yml)
+[Install Tanzu GemFire for Kubernetes and Tanzu Application Service project](install-tas-and-tgf/readme.md) installs the two projects.   After Tanzu GemFire for Kubernetes is in stalled it will instanciate a cluster as defined by this [file](install-tas-and-tgf/tanzu-gemfire.yml).
+
+# CF Push Tanzu GemFire Node applications

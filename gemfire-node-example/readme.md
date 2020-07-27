@@ -47,7 +47,7 @@ The scripts directory contains `startGemFire.sh`, which will start up two locato
 
 ### Expose the `VCAP_SERVICES` to the application through the environment
 ```
-export VCAP_SERVICES='{{"user-provided":[{"label": "user-provided","name": "fqdn-gemfire","tags": [],"instance_name": "fqdn-gemfire","binding_name": null,"credentials": {"locators": ["localhost[10334]","localhost[10335]"]},"syslog_drain_url": "","volume_mounts": []}]}'
+export VCAP_SERVICES='{{"user-provided":[{"label": "user-provided","name": "gemfire-service","tags": [],"instance_name": "gemfire-service","binding_name": null,"credentials": {"locators": ["localhost[10334]","localhost[10335]"]},"syslog_drain_url": "","volume_mounts": []}]}'
 ```
 ### Run the NodeJS server
 
@@ -77,18 +77,10 @@ curl -X GET \
 
 ## Run on TAS
 
-Edit the `manifest.yml` file to update the service instance that the app will be bound to.  In this repository the service instance is called `fqdn-gemfire`.
+Edit the `manifest.yml` file to update the service instance that the app will be bound to.  In this repository the service instance is called `gemfire-service`.
 
-### Create the User Provided Service `cups`
-The fully qualified hostname of the locators will be dependent on `name` of the cluster and the name space its in.   Using the default install the below `cf cups` command is valid.
 
-Check this [file](../setup-tas-for-k8s/setup_tas4k8s.sh) for `name`
-
-```
-cf cups fqdn-gemfire -p '{"locators":["gemfire-locator-0.gemfire-locator.default.svc.cluster.local[10334]","gemfire-locator-1.gemfire-locator.default.svc.cluster.local[10334]"]}'
-```
-
-# Create the region in Tanzu GemFire
+### Create the region in Tanzu GemFire
 
 In order to store data in Tanzu GemFire we first need to create something called a region.  There are two main region types replicated and partitioned.   Most applications will be using partitioned.  
 
@@ -108,16 +100,32 @@ Connecting to Locator at [host=localhost, port=10334] ..
 Connecting to Manager at [host=gemfire-locator-0.gemfire-locator.default.svc.cluster.local, port=1099] ..
 Successfully connected to: [host=gemfire-locator-0.gemfire-locator.default.svc.cluster.local, port=1099]
 
-gfsh>create region --name=test --type=PARTITION
+gfsh>create region --name=books --type=PARTITION
      Member      | Status | Message
 ---------------- | ------ | --------------------------------------------
-gemfire-server-0 | OK     | Region "/test" created on "gemfire-server-0"
-gemfire-server-1 | OK     | Region "/test" created on "gemfire-server-1"
+gemfire-server-0 | OK     | Region "/books" created on "gemfire-server-0"
+gemfire-server-1 | OK     | Region "/books" created on "gemfire-server-1"
 
 Cluster configuration for group 'cluster' is updated.
 
 gfsh>exit
 ```
+
+### Create the User Provided Service `cups`
+The fully qualified hostname of the locators will be dependent on `name` of the cluster and the name space its in.   
+
+```
+ <cluster name>-locator-{replica-index}.<cluster name>-locator.{namespace}.svc.cluster.local
+ ```
+
+Check this [file](../install-tas-and-tgf/setup-tanzu-gemfire/tanzu-gemfire.yml) for `name`
+
+Using the default install the below `cf cups` command is valid.
+
+```
+cf cups gemfire-service -p '{"locators":["gemfire-locator-0.gemfire-locator.default.svc.cluster.local[10334]","gemfire-locator-1.gemfire-locator.default.svc.cluster.local[10334]"]}'
+```
+
 ### Push the app
 
 ```
@@ -127,7 +135,7 @@ $ cf push
 ### Add a book
 ```
 curl -k -X PUT \
-  'https://cloudcache-node-sample.apps.vcap.me/book/put?isbn=0525565329' \
+  'https://gemfire-node-sample.apps.vcap.me/book/put?isbn=0525565329' \
   -H 'Content-Type: application/json' \
   -d '{
   "FullTitle": "The Shining",
@@ -141,10 +149,10 @@ curl -k -X PUT \
 ### Get a book by ISBN
 ```
 curl -k -X GET \
-  'https://cloudcache-node-sample.apps.vcap.me/book/get?isbn=0525565329'
+  'https://gemfire-node-sample.apps.vcap.me/book/get?isbn=0525565329'
 ```
 ### Remove All of the Books
 ```
-curl -k -X GET \
-  'https://cloudcache-node-sample.apps.vcap.me/removeall'
+curl -k -X PUT \
+  'https://gemfire-node-sample.apps.vcap.me/book/removeall'
 ```
